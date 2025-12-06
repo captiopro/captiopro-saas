@@ -407,3 +407,81 @@ html {
     transition: none !important;
   }
 }
+
+/* Mobile-specific improvements */
+@media (max-width: 768px) {
+  /* Better touch targets */
+  button, a, input, select, textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Prevent horizontal overflow */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Better text readability on mobile */
+  body {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  
+  /* Improve tap highlight */
+  * {
+    -webkit-tap-highlight-color: rgba(74, 79, 255, 0.1);
+  }
+  
+  /* Safe area for notched devices */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  /* Reduce motion on mobile for better performance */
+  .animate-aurora,
+  .animate-aurora-2,
+  .animate-aurora-3,
+  .animate-morph {
+    animation-duration: 20s !important;
+  }
+  
+  /* Optimize gradients on mobile */
+  .gradient-mesh {
+    opacity: 0.5;
+  }
+  
+  /* Better spacing for mobile cards */
+  .card-premium {
+    padding: 1rem !important;
+  }
+  
+  /* Ensure modals are mobile-friendly */
+  .glass {
+    backdrop-filter: blur(10px);
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 375px) {
+  /* Reduce padding for very small screens */
+  h1 {
+    font-size: 1.75rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  h2 {
+    font-size: 1.5rem !important;
+    line-height: 1.3 !important;
+  }
+  
+  /* Smaller buttons on very small screens */
+  .btn-premium {
+    padding: 0.75rem 1.5rem !important;
+    font-size: 0.875rem !important;
+  }
+}
+
