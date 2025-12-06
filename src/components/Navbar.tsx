@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import { BRAND, NAVIGATION, COLORS } from '@/lib/constants'
 import { authService, User } from '@/lib/auth'
-import { Menu, X, User as UserIcon, Settings, LogOut, CreditCard, Bell, Zap } from './Icons'
+import { Menu, X, User as UserIcon, Settings, LogOut, CreditCard, Bell, Zap, Shield } from './Icons'
 import Logo from './Logo'
 
 // ChevronDown icon component
@@ -217,6 +217,22 @@ export default function Navbar() {
                           <div className="text-xs text-gray-600">Manage your account</div>
                         </div>
                       </Link>
+
+                      {user.isAdmin && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-all duration-300 group"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Shield size={18} className="text-indigo-600" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-sm font-bold text-[#0E0E11] group-hover:text-indigo-600">Admin Panel</div>
+                            <div className="text-xs text-gray-600">Manage platform</div>
+                          </div>
+                        </Link>
+                      )}
 
                       <Link
                         href="/account?tab=billing"
