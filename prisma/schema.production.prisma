@@ -1,0 +1,131 @@
+// Production-Ready Prisma Schema for Captiopro
+// Copy this to schema.prisma when deploying to production
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model with enhanced fields for SaaS
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  
+  // SaaS-specific fields
+  role      String   @default("user")        // user, admin, premium
+  plan      String   @default("free")        // free, starter, professional, enterprise
+  credits   Int      @default(100)           // AI generation credits
+  
+  // Subscription tracking
+  subscriptionId     String?   @unique
+  subscriptionStatus String?   // active, canceled, past_due
+  subscriptionEndsAt DateTime?
+  
+  // Usage tracking
+  contentGenerated   Int      @default(0)    // Total content pieces created
+  lastActiveAt       DateTime @default(now())
+  
+  // Metadata
+  emailVerified      Boolean  @default(false)
+  emailVerifiedAt    DateTime?
+  resetToken         String?
+  resetTokenExpiry   DateTime?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  contents  Content[]
+  apiKeys   ApiKey[]
+  
+  // Indexes for performance
+  @@index([email])
+  @@index([role])
+  @@index([plan])
+  @@index([createdAt])
+  @@index([lastActiveAt])
+}
+
+// Generated content tracking
+model Content {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Content details
+  type        String   // social_media, blog, video_script, etc.
+  title       String?
+  content     String   @db.Text
+  prompt      String   @db.Text
+  
+  // AI metadata
+  model       String?  // gpt-4, claude-3, etc.
+  tokensUsed  Int      @default(0)
+  language    String   @default("en")
+  
+  // Status
+  status      String   @default("active") // active, archived, deleted
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Indexes
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([status])
+}
+
+// API Keys for developers
+model ApiKey {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  key         String   @unique
+  name        String
+  
+  // Usage tracking
+  usageCount  Int      @default(0)
+  lastUsedAt  DateTime?
+  
+  // Status
+  isActive    Boolean  @default(true)
+  expiresAt   DateTime?
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([key])
+}
+
+// Analytics tracking
+model Analytics {
+  id            String   @id @default(uuid())
+  
+  // Event tracking
+  event         String   // signup, login, generate_content, upgrade, etc.
+  userId        String?
+  
+  // Metadata
+  metadata      String?  @db.Text // JSON string
+  ipAddress     String?
+  userAgent     String?
+  
+  // Timestamp
+  createdAt     DateTime @default(now())
+  
+  @@index([event])
+  @@index([userId])
+  @@index([createdAt])
+}
