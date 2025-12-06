@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { BRAND, TOOLS } from '@/lib/constants'
 import { IconRenderer } from '@/components/IconRenderer'
-import { Sparkles, TrendingUp, Clock, FileText, Star, Download, Settings as SettingsIcon } from '@/components/Icons'
+import { Sparkles, TrendingUp, Clock, FileText, Star, Download } from '@/components/Icons'
 import Badge from '@/components/Badge'
-import Link from 'next/link'
 import { DashboardSkeleton } from '@/components/SkeletonLoader'
 import { authService, User } from '@/lib/auth'
 
@@ -46,24 +45,14 @@ export default function DashboardPage() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="mb-12">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <Badge variant="primary" className="mb-4 inline-flex items-center gap-2">
-                <Sparkles size={14} />
-                Dashboard
-              </Badge>
-              <h1 className="text-4xl md:text-6xl font-extrabold text-[#0E0E11] mb-4 tracking-tight">
-                Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4A4FFF] to-purple-600">{user?.name || 'User'}</span>
-              </h1>
-              <p className="text-xl text-gray-600 font-medium">Start creating amazing content with AI • {user?.plan || 'Free'} Plan</p>
-            </div>
-            <Link href="/account">
-              <button className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:border-[#4A4FFF] hover:text-[#4A4FFF] transition-all flex items-center gap-2">
-                <SettingsIcon size={20} />
-                Account Settings
-              </button>
-            </Link>
-          </div>
+          <Badge variant="primary" className="mb-4 inline-flex items-center gap-2">
+            <Sparkles size={14} />
+            Dashboard
+          </Badge>
+          <h1 className="text-4xl md:text-6xl font-extrabold text-[#0E0E11] mb-4 tracking-tight">
+            Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4A4FFF] to-purple-600">{user?.name || 'User'}</span>
+          </h1>
+          <p className="text-xl text-gray-600 font-medium">Start creating amazing content with AI • {user?.plan || 'Free'} Plan</p>
         </div>
 
         {/* Tabs */}

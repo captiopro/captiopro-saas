@@ -7,6 +7,7 @@ export interface User {
   email: string
   avatar: string
   plan: string
+  isAdmin?: boolean
 }
 
 const AUTH_STORAGE_KEY = 'captiopro_auth'
