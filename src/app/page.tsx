@@ -5,15 +5,19 @@ import Link from 'next/link'
 import { BRAND, TOOLS, FEATURES, PRICING_PLANS, TESTIMONIALS, TRUST_BADGES, STATS } from '@/lib/constants'
 import { GradientText, GlowEffect, NeumorphicButton, CountUpAnimation, TestimonialCard, Badge, AnimatedCard, TryItNow, UseCases, Comparison, TrustSignals, HowItWorks } from '@/components'
 import { IconRenderer } from '@/components/IconRenderer'
-import { ArrowRight, CheckCircle, Star, Play, Zap, Shield, Award, Target } from '@/components/Icons'
+import { ArrowRight, CheckCircle, Star, Play, Zap, Shield, Award, Target, Check } from '@/components/Icons'
+import { authService, User } from '@/lib/auth'
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
     // Check if user is logged in
-    const authStatus = localStorage.getItem('captiopro_auth')
-    setIsLoggedIn(authStatus === 'true')
+    if (authService.isAuthenticated()) {
+      setIsLoggedIn(true)
+      setUser(authService.getCurrentUser())
+    }
   }, [])
 
   return (
@@ -345,16 +349,29 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {PRICING_PLANS.map((plan, i) => (
+            {PRICING_PLANS.map((plan, i) => {
+              const isCurrentPlan = user?.plan === plan.name
+              
+              return (
               <AnimatedCard
                 key={plan.id}
                 delay={i * 100}
                 className={`
                   relative overflow-hidden
                   ${plan.featured ? 'border-[#4A4FFF] bg-gradient-to-br from-[#4A4FFF]/5 to-[#2E30B0]/5 ring-2 ring-[#4A4FFF]/20 md:scale-105 shadow-xl' : ''}
+                  ${isCurrentPlan ? 'ring-2 ring-green-500 bg-green-50/50' : ''}
                 `}
               >
-                {plan.featured && (
+                {isCurrentPlan && (
+                  <div className="absolute top-0 right-0">
+                    <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg flex items-center gap-1">
+                      <Check size={12} />
+                      CURRENT
+                    </div>
+                  </div>
+                )}
+                
+                {!isCurrentPlan && plan.featured && (
                   <div className="absolute top-0 right-0">
                     <div className="bg-gradient-to-r from-[#4A4FFF] to-[#2E30B0] text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
                       POPULAR
@@ -362,7 +379,7 @@ export default function Home() {
                   </div>
                 )}
                 
-                {plan.id === 'free' && (
+                {!isCurrentPlan && plan.id === 'free' && (
                   <div className="absolute top-0 right-0">
                     <Badge variant="success" size="sm" className="m-2">FREE</Badge>
                   </div>
@@ -383,15 +400,35 @@ export default function Home() {
                   )}
                 </div>
 
-                <Link href={isLoggedIn ? "/dashboard" : "/signup"} className="w-full block mb-4 sm:mb-6">
+                <Link href={isLoggedIn ? (isCurrentPlan ? "/dashboard" : `/account?tab=billing&upgrade=${plan.id}`) : `/signup?plan=${plan.id}`} className="w-full block mb-4 sm:mb-6">
                   <button
+                    disabled={isCurrentPlan}
                     className={`w-full py-2.5 sm:py-3 rounded-lg font-bold transition-all duration-300 text-sm sm:text-base ${
-                      plan.featured
+                      isCurrentPlan
+                        ? 'bg-gray-400 text-white cursor-not-allowed'
+                        : plan.featured
                         ? 'bg-gradient-to-r from-[#4A4FFF] to-[#2E30B0] text-white hover:shadow-lg hover:shadow-[#4A4FFF]/40 transform hover:-translate-y-0.5'
                         : 'border-2 border-[#4A4FFF] text-[#4A4FFF] hover:bg-[#4A4FFF]/5'
                     }`}
                   >
-                    {isLoggedIn ? "Go to Dashboard" : (plan.id === 'free' ? 'Start Free' : 'Get Started')}
+                    {isCurrentPlan ? (
+                      <>
+                        <Check size={16} className="inline mr-1" />
+                        Current Plan
+                      </>
+                    ) : isLoggedIn ? (
+                      (() => {
+                        const currentPlanIndex = PRICING_PLANS.findIndex(p => p.name === user?.plan)
+                        const targetPlanIndex = PRICING_PLANS.findIndex(p => p.id === plan.id)
+                        if (targetPlanIndex > currentPlanIndex) {
+                          return `Upgrade to ${plan.name}`
+                        } else {
+                          return `Switch to ${plan.name}`
+                        }
+                      })()
+                    ) : (
+                      plan.id === 'free' ? 'Start Free' : 'Get Started'
+                    )}
                   </button>
                 </Link>
 
@@ -404,7 +441,7 @@ export default function Home() {
                   ))}
                 </div>
               </AnimatedCard>
-            ))}
+            )})}
           </div>
 
           <div className="text-center mt-8 sm:mt-12">
