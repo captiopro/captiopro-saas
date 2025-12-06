@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-  "build": "next build",
-  "postbuild": "rm -f .next/standalone/.env .netlify/functions-internal/___netlify-server-handler/.env || true",
+    "build": "next build",
+    "postbuild": "rm -f .next/standalone/.env .netlify/functions-internal/___netlify-server-handler/.env || true",
+    "precommit": "bash scripts/precommit-checks.sh",
+    "setup:hooks": "husky install && npx husky add .husky/pre-commit \"npm run precommit\" || true",
     "start": "next start",
     "lint": "eslint",
     "db:generate": "prisma generate",
@@ -28,6 +30,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.0.7",
+    "husky": "^8.0.0",
     "tailwindcss": "^4",
     "tsx": "^4.19.2",
     "typescript": "^5"
