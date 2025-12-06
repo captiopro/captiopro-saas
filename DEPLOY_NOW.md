@@ -61,9 +61,9 @@ gh repo create captiopro-saas --private --source=. --remote=origin --push
    
    **Variable Name**: `DATABASE_URL`
    
-   **Value**: (Copy from your `.env` file)
+   **Value**: (Set this in your hosting provider or in your local `.env` — do NOT commit credentials)
    ```
-   postgresql://neondb_owner:npg_RZWVvO4p3Gwm@ep-wispy-frost-a1f7c09p.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+   DATABASE_URL="<redacted - set this in your hosting provider / .env.local>"
    ```
    
    Click "Add"

@@ -87,9 +87,9 @@ Add this variable:
 DATABASE_URL
 ```
 
-**Value** (copy this exactly):
+**Value** (copy this exactly and set it in your hosting environment or local `.env`):
 ```
-postgresql://neondb_owner:npg_RZWVvO4p3Gwm@ep-wispy-frost-a1f7c09p.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+DATABASE_URL="<redacted - set this in your hosting provider / .env.local>"
 ```
 
 Click **"Add"**

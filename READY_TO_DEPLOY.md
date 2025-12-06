@@ -80,7 +80,7 @@ gh repo create captiopro-saas --private --source=. --push
 4. Add environment variable:
    
    Name: DATABASE_URL
-   Value: postgresql://neondb_owner:npg_RZWVvO4p3Gwm@ep-wispy-frost-a1f7c09p.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+   Value: DATABASE_URL="<redacted - set this in your hosting provider / .env.local>"
    
 5. Click "Deploy"
 ```
