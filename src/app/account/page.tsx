@@ -1,21 +1,52 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { BRAND } from '@/lib/constants'
 import { Settings, User, CreditCard, Bell, Shield, Key, LogOut, Edit, Save, Eye, EyeOff, Trash2, Download, CheckCircle } from '@/components/Icons'
+import { authService, User as UserType } from '@/lib/auth'
 
 export default function AccountPage() {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState('profile')
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
+  const [user, setUser] = useState<UserType | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Check authentication and load user data
+  useEffect(() => {
+    const checkAuth = () => {
+      if (!authService.isAuthenticated()) {
+        router.push('/login')
+        return
+      }
+      
+      const currentUser = authService.getCurrentUser()
+      setUser(currentUser)
+      
+      if (currentUser) {
+        setFormData({
+          name: currentUser.name || 'User',
+          email: currentUser.email || '',
+          company: 'Acme Inc',
+          phone: '+1 (555) 123-4567',
+        })
+      }
+      
+      setIsLoading(false)
+    }
+
+    checkAuth()
+  }, [router])
 
   const [formData, setFormData] = useState({
-    name: 'John Doe',
-    email: 'john@example.com',
+    name: 'User',
+    email: 'user@example.com',
     company: 'Acme Inc',
     phone: '+1 (555) 123-4567',
   })
@@ -60,6 +91,17 @@ export default function AccountPage() {
     setTimeout(() => setSuccessMessage(''), 3000)
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-[#4A4FFF] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -68,7 +110,7 @@ export default function AccountPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-extrabold text-[#0E0E11] tracking-tight">Account Settings</h1>
-              <p className="text-gray-600 mt-1">Manage your account preferences and settings</p>
+              <p className="text-gray-600 mt-1">Manage your account preferences and settings • {user?.plan || 'Free'} Plan</p>
             </div>
             <Link href="/dashboard" className="px-4 py-2 glass rounded-xl hover:bg-white/60 transition-all font-bold text-[#0E0E11] flex items-center gap-2">
               ← Dashboard
@@ -109,7 +151,14 @@ export default function AccountPage() {
               ))}
               
               <div className="pt-4 border-t border-gray-200">
-                <button className="w-full text-left px-4 py-3 rounded-xl font-bold text-red-600 hover:bg-red-50 transition-all flex items-center gap-3">
+                <button 
+                  onClick={() => {
+                    authService.logout()
+                    window.dispatchEvent(new Event('authChange'))
+                    router.push('/login')
+                  }}
+                  className="w-full text-left px-4 py-3 rounded-xl font-bold text-red-600 hover:bg-red-50 transition-all flex items-center gap-3"
+                >
                   <LogOut size={20} />
                   Sign Out
                 </button>

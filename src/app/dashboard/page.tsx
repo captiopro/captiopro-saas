@@ -1,24 +1,36 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { BRAND, TOOLS } from '@/lib/constants'
 import { IconRenderer } from '@/components/IconRenderer'
 import { Sparkles, TrendingUp, Clock, FileText, Star, Download, Settings as SettingsIcon } from '@/components/Icons'
 import Badge from '@/components/Badge'
 import Link from 'next/link'
 import { DashboardSkeleton } from '@/components/SkeletonLoader'
+import { authService, User } from '@/lib/auth'
 
 export default function DashboardPage() {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState('overview')
   const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null)
 
-  // Simulate initial data load
+  // Check authentication and load user data
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const checkAuth = () => {
+      if (!authService.isAuthenticated()) {
+        router.push('/login')
+        return
+      }
+      
+      const currentUser = authService.getCurrentUser()
+      setUser(currentUser)
       setIsLoading(false)
-    }, 1500)
-    return () => clearTimeout(timer)
-  }, [])
+    }
+
+    checkAuth()
+  }, [router])
 
   if (isLoading) {
     return <DashboardSkeleton />
@@ -41,9 +53,9 @@ export default function DashboardPage() {
                 Dashboard
               </Badge>
               <h1 className="text-4xl md:text-6xl font-extrabold text-[#0E0E11] mb-4 tracking-tight">
-                Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4A4FFF] to-purple-600">{BRAND.name}</span>
+                Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4A4FFF] to-purple-600">{user?.name || 'User'}</span>
               </h1>
-              <p className="text-xl text-gray-600 font-medium">Start creating amazing content with AI</p>
+              <p className="text-xl text-gray-600 font-medium">Start creating amazing content with AI • {user?.plan || 'Free'} Plan</p>
             </div>
             <Link href="/account">
               <button className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:border-[#4A4FFF] hover:text-[#4A4FFF] transition-all flex items-center gap-2">
