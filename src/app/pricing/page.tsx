@@ -1,11 +1,20 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Check, Zap, Sparkles, ArrowRight, Shield, Star, Users } from '@/components/Icons'
 import { GradientText } from '@/components'
 import { BRAND, PRICING_PLANS } from '@/lib/constants'
+import { authService, User } from '@/lib/auth'
 
 export default function PricingPage() {
+  const [user, setUser] = useState<User | null>(null)
+
+  useEffect(() => {
+    if (authService.isAuthenticated()) {
+      setUser(authService.getCurrentUser())
+    }
+  }, [])
   const faqs = [
     {
       question: 'Can I cancel anytime?',
@@ -83,14 +92,28 @@ export default function PricingPage() {
       <section className="pb-16 sm:pb-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {PRICING_PLANS.map((plan) => (
+            {PRICING_PLANS.map((plan) => {
+              const isCurrentPlan = user?.plan === plan.name
+              
+              return (
               <div
                 key={plan.id}
                 className={`relative glass rounded-2xl sm:rounded-3xl p-5 sm:p-6 transition-all duration-300 hover:scale-105 ${
                   plan.featured ? 'ring-2 ring-[#4A4FFF] hover:shadow-premium' : ''
+                } ${
+                  isCurrentPlan ? 'ring-2 ring-green-500 bg-green-50/50' : ''
                 }`}
               >
-                {plan.featured && (
+                {isCurrentPlan && (
+                  <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2">
+                    <div className="px-4 sm:px-6 py-1.5 sm:py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1">
+                      <Check size={14} />
+                      Your Current Plan
+                    </div>
+                  </div>
+                )}
+                
+                {!isCurrentPlan && plan.featured && (
                   <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2">
                     <div className="px-4 sm:px-6 py-1.5 sm:py-2 bg-gradient-to-r from-[#4A4FFF] to-[#764ba2] text-white text-xs font-bold rounded-full shadow-lg">
                       ⭐ Most Popular
@@ -114,12 +137,38 @@ export default function PricingPage() {
                   </div>
                 </div>
 
-                <Link href={`/signup?plan=${plan.id}`} className="block mb-4 sm:mb-6">
-                  <button className={`w-full py-2.5 sm:py-3 rounded-xl font-bold text-white shadow-lg hover:shadow-premium hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 bg-gradient-to-r from-[#4A4FFF] to-[#764ba2] text-sm sm:text-base`}>
-                    {plan.price === 0 ? 'Get Started Free' : 'Upgrade Now'}
-                    <ArrowRight size={16} />
+                {user?.plan === plan.name ? (
+                  <button 
+                    disabled
+                    className="w-full py-2.5 sm:py-3 rounded-xl font-bold text-white shadow-lg transition-all duration-300 flex items-center justify-center gap-2 bg-gray-400 cursor-not-allowed text-sm sm:text-base mb-4 sm:mb-6"
+                  >
+                    <Check size={16} />
+                    Current Plan
                   </button>
-                </Link>
+                ) : (
+                  <Link href={user ? `/account?tab=billing&upgrade=${plan.id}` : `/signup?plan=${plan.id}`} className="block mb-4 sm:mb-6">
+                    <button className={`w-full py-2.5 sm:py-3 rounded-xl font-bold text-white shadow-lg hover:shadow-premium hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 bg-gradient-to-r from-[#4A4FFF] to-[#764ba2] text-sm sm:text-base`}>
+                      {user ? (
+                        // If user exists, determine if upgrade or downgrade
+                        (() => {
+                          const currentPlanIndex = PRICING_PLANS.findIndex(p => p.name === user.plan)
+                          const targetPlanIndex = PRICING_PLANS.findIndex(p => p.id === plan.id)
+                          if (targetPlanIndex > currentPlanIndex) {
+                            return <>Upgrade to {plan.name} <ArrowRight size={16} /></>
+                          } else {
+                            return <>Switch to {plan.name} <ArrowRight size={16} /></>
+                          }
+                        })()
+                      ) : (
+                        plan.price === 0 ? (
+                          <>Get Started Free <ArrowRight size={16} /></>
+                        ) : (
+                          <>Start with {plan.name} <ArrowRight size={16} /></>
+                        )
+                      )}
+                    </button>
+                  </Link>
+                )}
 
                 <div className="space-y-2 sm:space-y-3">
                   {plan.features.map((feature, i) => (
@@ -134,7 +183,7 @@ export default function PricingPage() {
                   ))}
                 </div>
               </div>
-            ))}
+            )})}
           </div>
         </div>
       </section>
