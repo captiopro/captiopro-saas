@@ -127,10 +127,11 @@ npm run db:studio
 ### For Deployment to Vercel
 1. Push code to GitHub
 2. Import project to Vercel
-3. Add environment variable in Vercel:
-   ```
-   DATABASE_URL="postgresql://neondb_owner:npg_RZWVvO4p3Gwm@ep-wispy-frost-a1f7c09p.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
-   ```
+3. Add environment variable in Vercel (do NOT commit secrets to the repo):
+  ```
+  # Set this value in your hosting provider or in your local .env
+  DATABASE_URL="<redacted - set this in your hosting provider / .env.local>"
+  ```
 4. Deploy! Vercel will run migrations automatically
 
 ### For Other Hosting (Railway, Netlify, etc.)
