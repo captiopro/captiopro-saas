@@ -36,9 +36,9 @@ Your Captiopro app is now connected to **Neon PostgreSQL** and production-ready!
 
 ## 🔐 Your Database Credentials
 
-**Connection String** (already configured in `.env`):
+**Connection String** (stored in environment variables - do NOT commit credentials to the repository):
 ```
-postgresql://neondb_owner:npg_RZWVvO4p3Gwm@ep-wispy-frost-a1f7c09p.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+DATABASE_URL="<redacted - set this in your hosting provider / .env.local>
 ```
 
 **Neon Dashboard**: https://console.neon.tech/app/projects/late-math-04112196
