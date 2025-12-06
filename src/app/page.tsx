@@ -17,13 +17,13 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="bg-white">
+    <div className="bg-white overflow-x-hidden">
       {/* Skip link for keyboard users */}
       <a href="#main-content" className="skip-link">Skip to content</a>
 
-      <main id="main-content" className="relative">
+      <main id="main-content" className="relative overflow-x-hidden">
         {/* Hero Section */}
-        <section aria-label="Hero" className="relative overflow-hidden pt-20 pb-32 px-4 bg-[#0A0A0F]">
+        <section aria-label="Hero" className="relative overflow-hidden pt-20 pb-32 px-4 bg-[#0A0A0F] w-full">
         {/* ULTRA PREMIUM Background - Multiple Advanced Layers */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           
@@ -96,7 +96,7 @@ export default function Home() {
           <div className="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-white/10 via-pink-500/10 to-transparent blur-sm" style={{ animationDelay: '4s' }} />
         </div>
 
-        <div className="max-w-6xl mx-auto relative z-10">
+        <div className="max-w-6xl mx-auto relative z-10 w-full">
           <div className="text-center mb-12 animate-slide-up">
             {/* Premium Trust Badges with Enhanced Animation */}
             <div className="inline-flex items-center gap-3 mb-8 flex-wrap justify-center">
